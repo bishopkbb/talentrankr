@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ candidate.Name }} - Candidate Details | TalentRankr</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .score-circle {
+            background: conic-gradient(from 0deg, #10b981 0%, #10b981 var(--score-percent), #e5e7eb var(--score-percent), #e5e7eb 100%);
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .progress-bar {
+            transition: width 1s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="flex items-center space-x-2">
+                        <div class="bg-indigo-600 p-2 rounded-lg">
+                            <i class="fas fa-chart-line text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">TalentRankr</span>
+                    </a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="/rank/{{ file_id }}" 
+                       class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors flex items-center">
+                        <i class="fas fa-list mr-2"></i>
+                        Rankings
+                    </a>
+                    <a href="/" 
+                       class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-4 py-2 rounded-lg transition-colors flex items-center">
+                        <i class="fas fa-home mr-2"></i>
+                        Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="glass-card rounded-2xl p-8 mb-8 animate-fade-in">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-6">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="gradient-bg w-16 h-16 rounded-full flex items-center justify-center mr-4">
+                        {% if id <= 3 %}
+                            <i class="fas fa-crown text-yellow-300 text-2xl"></i>
+                        {% else %}
+                            <i class="fas fa-user text-white text-2xl"></i>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">{{ candidate.Name }}</h1>
+                        <p class="text-gray-600">Rank #{{ id }} of {{ total_candidates }} candidates</p>
+                    </div>
+                </div>
+                
+                <!-- Score Display -->
+                <div class="text-center">
+                    <div class="relative w-24 h-24 mx-auto mb-2">
+                        <div class="score-circle w-full h-full rounded-full flex items-center justify-center" style="--score-percent: {{ candidate.Score }}%">
+                            <div class="bg-white w-16 h-16 rounded-full flex items-center justify-center">
+                                <span class="text-xl font-bold {% if candidate.Score >= 70 %}text-emerald-600{% elif candidate.Score >= 50 %}text-yellow-600{% else %}text-red-600{% endif %}">{{ candidate.Score }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 font-medium">Overall Score</p>
+                </div>
+            </div>
+            
+            <!-- Score Breakdown -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-blue-800">Skills</span>
+                        <span class="text-sm font-bold text-blue-900">{{ candidate.Skills_Score }}/40</span>
+                    </div>
+                    <div class="bg-blue-200 rounded-full h-2">
+                        <div class="progress-bar bg-blue-600 h-2 rounded-full" style="width: {{ candidate.Skills_Percentage }}%"></div>
+                    </div>
+                    <p class="text-xs text-blue-700 mt-1">{{ candidate.Skills_Percentage }}% • 40% weight</p>
+                </div>
+                
+                <div class="bg-emerald-50 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-emerald-800">Experience</span>
+                        <span class="text-sm font-bold text-emerald-900">{{ candidate.Experience_Score }}/30</span>
+                    </div>
+                    <div class="bg-emerald-200 rounded-full h-2">
+                        <div class="progress-bar bg-emerald-600 h-2 rounded-full" style="width: {{ candidate.Experience_Percentage }}%"></div>
+                    </div>
+                    <p class="text-xs text-emerald-700 mt-1">{{ candidate.Experience_Percentage }}% • 30% weight</p>
+                </div>
+                
+                <div class="bg-purple-50 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-purple-800">Education</span>
+                        <span class="text-sm font-bold text-purple-900">{{ candidate.Education_Score }}/20</span>
+                    </div>
+                    <div class="bg-purple-200 rounded-full h-2">
+                        <div class="progress-bar bg-purple-600 h-2 rounded-full" style="width: {{ candidate.Education_Percentage }}%"></div>
+                    </div>
+                    <p class="text-xs text-purple-700 mt-1">{{ candidate.Education_Percentage }}% • 20% weight</p>
+                </div>
+                
+                <div class="bg-teal-50 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-teal-800">Cover Letter</span>
+                        <span class="text-sm font-bold text-teal-900">{{ candidate.CoverLetter_Score }}/10</span>
+                    </div>
+                    <div class="bg-teal-200 rounded-full h-2">
+                        <div class="progress-bar bg-teal-600 h-2 rounded-full" style="width: {{ candidate.CoverLetter_Percentage }}%"></div>
+                    </div>
+                    <p class="text-xs text-teal-700 mt-1">{{ candidate.CoverLetter_Percentage }}% • 10% weight</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Information -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Left Column -->
+            <div class="space-y-6">
+                <!-- Skills Section -->
+                <div class="glass-card rounded-xl p-6 animate-fade-in" style="animation-delay: 0.2s;">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                            <i class="fas fa-cogs text-blue-600"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">Skills & Technologies</h3>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">{{ candidate.Skills }}</p>
+                </div>
+                
+                <!-- Experience Section -->
+                <div class="glass-card rounded-xl p-6 animate-fade-in" style="animation-delay: 0.4s;">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-emerald-100 p-2 rounded-lg mr-3">
+                            <i class="fas fa-briefcase text-emerald-600"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">Experience</h3>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">{{ candidate.Experience }}</p>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="space-y-6">
+                <!-- Education Section -->
+                <div class="glass-card rounded-xl p-6 animate-fade-in" style="animation-delay: 0.6s;">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-purple-100 p-2 rounded-lg mr-3">
+                            <i class="fas fa-graduation-cap text-purple-600"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">Education</h3>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">{{ candidate.Education }}</p>
+                </div>
+                
+                <!-- Cover Letter Section -->
+                <div class="glass-card rounded-xl p-6 animate-fade-in" style="animation-delay: 0.8s;">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-teal-100 p-2 rounded-lg mr-3">
+                            <i class="fas fa-file-alt text-teal-600"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">Cover Letter</h3>
+                    </div>
+                    <div class="max-h-48 overflow-y-auto">
+                        <p class="text-gray-700 leading-relaxed">{{ candidate.CoverLetter }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <!-- Previous/Next Candidate -->
+            <div class="flex gap-4">
+                {% if id > 1 %}
+                <a href="/candidate/{{ id - 1 }}" 
+                   class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg transition-colors flex items-center transform hover:scale-105">
+                    <i class="fas fa-chevron-left mr-2"></i>
+                    Previous Candidate
+                </a>
+                {% endif %}
+                
+                {% if id < total_candidates %}
+                <a href="/candidate/{{ id + 1 }}" 
+                   class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg transition-colors flex items-center transform hover:scale-105">
+                    Next Candidate
+                    <i class="fas fa-chevron-right ml-2"></i>
+                </a>
+                {% endif %}
+            </div>
+            
+            <!-- Main Navigation -->
+            <div class="flex gap-4">
+                <a href="/rank/{{ file_id }}" 
+                   class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-list mr-2"></i>
+                    Back to Rankings
+                </a>
+                
+                <a href="/" 
+                   class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-home mr-2"></i>
+                    Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Animate progress bars on load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.querySelectorAll('.progress-bar').forEach(bar => {
+                    const width = bar.style.width;
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.width = width;
+                    }, 100);
+                });
+            }, 500);
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            {% if id > 1 %}
+            if (e.key === 'ArrowLeft') {
+                window.location.href = '/candidate/{{ id - 1 }}';
+            }
+            {% endif %}
+            {% if id < total_candidates %}
+            if (e.key === 'ArrowRight') {
+                window.location.href = '/candidate/{{ id + 1 }}';
+            }
+            {% endif %}
+            if (e.key === 'Escape') {
+                window.location.href = '/rank/{{ file_id }}';
+            }
+        });
+
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

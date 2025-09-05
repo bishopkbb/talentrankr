@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentRankr - AI Application Selection Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="{{url_for('static', path='favicon-32x32.png')}}" type="image/x-icon">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .file-upload-area {
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload-area:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .drag-over {
+            border-color: #10b981 !important;
+            background-color: rgba(16, 185, 129, 0.05) !important;
+            transform: scale(1.02);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #3730a3 0%, #2563eb 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .glass-button {
+            background: rgba(16, 185, 129, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .glass-button:hover {
+            background: rgba(5, 150, 105, 0.95);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -12px rgba(16, 185, 129, 0.4);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100">
+    <!-- Navbar -->
+    <nav class="glass-nav shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-indigo-700 p-2 rounded-xl shadow-lg">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-bold text-indigo-700">TalentRankr</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="flex items-center space-x-6 text-gray-900">
+                        <a href="/" class="hover:text-indigo-700 transition-colors font-medium">Dashboard</a>
+                        <a href="/health" class="hover:text-indigo-700 transition-colors font-medium">System Status</a>
+                        <a href="/api/rank" class="hover:text-indigo-700 transition-colors font-medium">API</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button class="text-gray-900 hover:text-indigo-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-indigo-700 via-blue-600 to-emerald-500 min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto text-center">
+            <!-- Hero Content -->
+            <div class="mb-12">
+                <div class="floating-animation mb-8">
+                    <div class="glass-card inline-flex items-center justify-center w-24 h-24 rounded-full mb-6">
+                        <i class="fas fa-brain text-indigo-700 text-3xl"></i>
+                    </div>
+                </div>
+                
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+                    AI Application Selection Tool
+                </h1>
+                
+                <p class="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto font-light">
+                    Upload application data and let AI rank the best candidates
+                </p>
+            </div>
+
+            <!-- Upload Card -->
+            <div class="glass-card rounded-2xl shadow-2xl p-8 md:p-12 max-w-2xl mx-auto ring-1 ring-gray-200">
+                <form action="/upload-csv" method="post" enctype="multipart/form-data" class="space-y-8" id="upload-form">
+                    
+                    <!-- Upload Area -->
+                    <div class="relative">
+                        <label for="file-upload" class="file-upload-area flex flex-col items-center justify-center w-full h-64 border-3 border-gray-300 border-dashed rounded-2xl cursor-pointer bg-white hover:bg-gray-50 transition-all duration-300 ring-1 ring-gray-200">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <div class="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mb-4 shadow-lg">
+                                    <i class="fas fa-cloud-upload-alt text-white text-2xl"></i>
+                                </div>
+                                <p class="mb-2 text-lg text-gray-900 font-medium">
+                                    <span class="font-semibold">Click to upload</span> or drag and drop
+                                </p>
+                                <p class="text-sm text-gray-600 mb-2">CSV files (with Name, Skills, Education, Experience, CoverLetter columns)</p>
+                                <p class="text-xs text-gray-500">Maximum file size: 10MB</p>
+                            </div>
+                            <input id="file-upload" name="file" type="file" accept=".csv" class="hidden" required>
+                        </label>
+                    </div>
+
+                    <!-- File Info Display -->
+                    <div id="file-info" class="hidden glass-card rounded-xl p-4 ring-1 ring-emerald-200 bg-emerald-50/50">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center mr-4 shadow-sm">
+                                <i class="fas fa-file text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-gray-900" id="file-name"></p>
+                                <p class="text-xs text-emerald-600" id="file-size"></p>
+                            </div>
+                            <button type="button" id="remove-file" class="w-8 h-8 bg-red-100 hover:bg-red-200 rounded-lg flex items-center justify-center text-red-500 hover:text-red-700 transition-colors">
+                                <i class="fas fa-times text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-4">
+                        <button type="submit" id="submit-btn" class="w-full glass-button text-white font-semibold py-4 px-8 rounded-xl shadow-lg transform transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none" disabled>
+                            <i class="fas fa-magic mr-3"></i>
+                            Analyze Applications with AI
+                        </button>
+                    </div>
+                    
+                    <!-- Progress Bar (Hidden by default) -->
+                    <div id="progress-bar" class="hidden">
+                        <div class="bg-gray-200 rounded-full h-2 overflow-hidden">
+                            <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 h-full rounded-full transition-all duration-300 ease-out" style="width: 0%" id="progress"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2 text-center">Processing your files...</p>
+                    </div>
+
+                </form>
+                
+                <!-- Features -->
+                <div class="mt-8 pt-8 border-t border-gray-200">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="glass-card p-4 rounded-xl ring-1 ring-gray-200">
+                            <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center mx-auto mb-2 shadow-sm">
+                                <i class="fas fa-shield-alt text-white text-sm"></i>
+                            </div>
+                            <p class="text-xs text-gray-900 font-medium">Secure Processing</p>
+                        </div>
+                        <div class="glass-card p-4 rounded-xl ring-1 ring-gray-200">
+                            <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center mx-auto mb-2 shadow-sm">
+                                <i class="fas fa-bolt text-white text-sm"></i>
+                            </div>
+                            <p class="text-xs text-gray-900 font-medium">Lightning Fast</p>
+                        </div>
+                        <div class="glass-card p-4 rounded-xl ring-1 ring-gray-200">
+                            <div class="w-8 h-8 bg-indigo-700 rounded-lg flex items-center justify-center mx-auto mb-2 shadow-sm">
+                                <i class="fas fa-brain text-white text-sm"></i>
+                            </div>
+                            <p class="text-xs text-gray-900 font-medium">AI Powered</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <a href="/health" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors flex items-center text-sm">
+                            <i class="fas fa-heartbeat mr-2"></i>
+                            System Status
+                        </a>
+                        <a href="/api/rank" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-medium py-2 px-4 rounded-lg transition-colors flex items-center text-sm">
+                            <i class="fas fa-code mr-2"></i>
+                            API Access
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Info Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 mb-16 max-w-4xl mx-auto">
+                <div class="glass-card rounded-xl p-6 ring-1 ring-gray-200">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-indigo-700 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-users text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">Smart Candidate Matching</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm">Our AI analyzes resumes, cover letters, and application data to identify the most qualified candidates for your position.</p>
+                </div>
+                
+                <div class="glass-card rounded-xl p-6 ring-1 ring-gray-200">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-chart-bar text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">Detailed Analytics</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm">Get comprehensive insights with scoring metrics, skill assessments, and detailed candidate comparisons.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="glass-nav py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center text-sm text-gray-900">
+                Built for <span class="font-semibold gradient-text">PLP Nigeria Hackathon 2025</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const fileInput = document.getElementById('file-upload');
+        const fileInfo = document.getElementById('file-info');
+        const fileName = document.getElementById('file-name');
+        const fileSize = document.getElementById('file-size');
+        const removeBtn = document.getElementById('remove-file');
+        const submitBtn = document.getElementById('submit-btn');
+        const uploadArea = document.querySelector('label[for="file-upload"]');
+        const progressBar = document.getElementById('progress-bar');
+        const progress = document.getElementById('progress');
+        const form = document.getElementById('upload-form');
+
+        // File input change handler
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                displayFileInfo(file);
+            }
+        });
+
+        // Remove file handler
+        removeBtn.addEventListener('click', function() {
+            fileInput.value = '';
+            fileInfo.classList.add('hidden');
+            submitBtn.disabled = true;
+            resetSubmitButton();
+        });
+
+        // Display file information
+        function displayFileInfo(file) {
+            // Validate file type
+            const allowedTypes = ['.csv'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!allowedTypes.includes(fileExtension)) {
+                alert('Please upload only CSV files with the required columns: Name, Skills, Education, Experience, CoverLetter');
+                fileInput.value = '';
+                return;
+            }
+            
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileInfo.classList.remove('hidden');
+            submitBtn.disabled = false;
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Reset submit button
+        function resetSubmitButton() {
+            submitBtn.innerHTML = '<i class="fas fa-magic mr-3"></i>Analyze Applications with AI';
+            submitBtn.disabled = false;
+        }
+
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            uploadArea.classList.add('drag-over');
+        }
+
+        function unhighlight(e) {
+            uploadArea.classList.remove('drag-over');
+        }
+
+        uploadArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                const file = files[0];
+                const allowedTypes = ['.csv'];
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (allowedTypes.includes(fileExtension)) {
+                    fileInput.files = files;
+                    displayFileInfo(file);
+                } else {
+                    alert('Please upload only CSV files with the required columns: Name, Skills, Education, Experience, CoverLetter');
+                }
+            }
+        }
+
+        // Form submission with progress
+        form.addEventListener('submit', function(e) {
+            if (!fileInput.files.length) {
+                e.preventDefault();
+                alert('Please select a CSV file to upload.');
+                return;
+            }
+
+            // Show progress UI
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Processing...';
+            submitBtn.disabled = true;
+            progressBar.classList.remove('hidden');
+            
+            // Simulate progress (the actual upload will happen via form submission)
+            let progressValue = 0;
+            const progressInterval = setInterval(() => {
+                progressValue += 15;
+                if (progressValue >= 90) {
+                    progressValue = 90;
+                    clearInterval(progressInterval);
+                }
+                progress.style.width = progressValue + '%';
+            }, 100);
+            
+            // Allow form to submit naturally - don't prevent default
+        });
+
+        // Info functions for Rankings and Candidate buttons
+        function showRankingsInfo() {
+            alert('Rankings will be available after uploading a CSV file. You\'ll see all candidates ranked by their total scores with detailed breakdowns.');
+        }
+
+        function showCandidateInfo() {
+            alert('Individual candidate details will be available after processing your CSV file. Click on any candidate in the rankings to view their full profile.');
+        }
+    </script>
+</body>
+</html>
