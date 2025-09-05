@@ -1,9 +1,5 @@
 # TalentRankr
-<div align="center">
-  <img src="talentrankr-logo.png" alt="TalentRankr Logo" width="200" height="200">
-  <h3>AI-Powered Candidate Selection Tool</h3>
-</div>
-
+![Logo](images/talentrankr-logo.PNG)
 ---
 
 ## 📋 Overview
@@ -11,6 +7,10 @@
 TalentRankr is an intelligent applicant selection system designed to streamline the candidate evaluation process for programs, scholarships, and recruitment. Using advanced scoring algorithms, it analyzes candidate data across multiple dimensions including skills, experience, education, and cover letters to provide ranked recommendations and detailed insights.
 
 The system helps organizations make data-driven hiring decisions by automatically processing CSV files containing applicant information and generating comprehensive scorecards for each candidate.
+
+
+**Live Demo**
+Check out the live version here: [https://talentrankr.onrender.com/](https://talentrankr.onrender.com/)
 
 ## ✨ Features
 
@@ -126,24 +126,16 @@ TalentRankr/
 
 
 ### Upload Interface
-<p align="center">
-  <img src="dashboard.png" alt="Homepage Screenshot" width="500"/>
-</p>
+![Dashboard](images/dashboard.PNG)
 
 ### Data Preview
-<p align="center">
-  <img src="preview.png" alt="Homepage Screenshot" width="500"/>
-</p>
+![Data Preview](images/preview.PNG)
 
 ### Ranked Results
-<p align="center">
-  <img src="rank.png" alt="Homepage Screenshot" width="500"/>
-</p>
+![Ranked](images/rank.PNG)
 
 ### Candidate Profile
-<p align="center">
-  <img src="candidate.png" alt="Homepage Screenshot" width="500"/>
-</p>
+![Candidate Profile](images/candidate.PNG)
 
 ## 🔮 Future Improvements
 
